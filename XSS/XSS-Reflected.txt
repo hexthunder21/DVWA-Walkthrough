@@ -1,4 +1,4 @@
-HOW CAN YOU HACK DVWA USING XSS? :
+HOW CAN YOU HACK DVWA USING REFLECTED-XSS? :
 
 ================LOW LEVEL================
 All xss scripts work at this lvl because the web-site has no validation or filter 

